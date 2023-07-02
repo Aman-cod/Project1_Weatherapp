@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 1 or Day 1</title>
+  
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter City Name" spellcheck="false">
+            <button class="search-but"><img src="button.png" width="12%" height="12%"></button>
+        </div>
+        <div class="weather">
+            <img src="rain.png" class="weather-icon">
+            <h1 class="temp">33°C</h1>
+            <h2 class="place">Jamshedpur</h2>
+            <div class="details">
+            <div class="col">
+                <img src="humid.png">
+                <div>
+                    <p class="humid-num">50%</p>
+                    <p>Humidity</p>
+                </div>
+            </div>
+            <div class="col">
+                <img src="windspeed.png">
+                <div>
+                    <p class="wind-num">15kmph</p>
+                    <p>Wind Speed</p>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const apiKey = "a8466eca9a902e92205b1d4b3b670b0c";
+        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+        const searchBox = document.querySelector(".search input");
+        const searchBtn = document.querySelector(".search button");
+
+        const temperatureIcons = {
+          // Define temperature ranges and corresponding image URLs
+          "-20": "cold.png",
+          "0": "cool.png",
+          "20": "fog.png",
+          "40": "hot.png"
+        };
+
+        async function checkWeather(place) {
+          const response = await fetch(apiUrl + place + `&appid=${apiKey}`);
+          if (response.status === 200) {
+            const data = await response.json();
+
+            document.querySelector(".place").innerHTML = data.name;
+            document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+            document.querySelector(".humid-num").innerHTML = data.main.humidity + "%";
+            document.querySelector(".wind-num").innerHTML = data.wind.speed + "km/hr";
+
+            // Find the appropriate icon URL based on temperature
+            let iconUrl = "";
+            for (const tempRange in temperatureIcons) {
+              if (data.main.temp <= Number(tempRange)) {
+                iconUrl = temperatureIcons[tempRange];
+                break;
+              }
+            }
+            
+            // Update the weather icon image src attribute
+            const weatherIcon = document.querySelector(".weather-icon");
+            weatherIcon.src = iconUrl;
+          } else {
+            // Handle the error case
+            console.log("Error fetching weather data");
+          }
+        }
+
+        searchBtn.addEventListener("click", () => {
+            checkWeather(searchBox.value);
+        });
+    </script>
+</body>
+</html>
